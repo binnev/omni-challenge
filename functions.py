@@ -23,7 +23,8 @@ def get_points_from_route(points, route):
     return np.array([points[i] for i in route])
 
 
-def plot_points(points):
+def plot_stuff(points, ordered_points):
+    # plot points
     fig, ax = plt.subplots(figsize=(8, 8))
     plt.setp(ax, xlabel="x (km)", ylabel="y (km)")
     plt.plot(*points.T, "ok", ms=15, zorder=1)
@@ -31,25 +32,22 @@ def plot_points(points):
         # note: add 1 to point index because user counts from 1
         plt.text(*pt, str(ii+1), color="w", ha="center", va="center",
                  fontweight="bold", zorder=2)
-    return fig, ax
 
-
-def plot_route(ordered_points):
-    # plot dashed line for the route
+    # plot route
     plt.plot(*ordered_points.T, "--", c="0.5", zorder=-1)
     # add markers for start and end points
     plt.plot(*ordered_points[0], "ob", ms=20)
     plt.plot(*ordered_points[-1], "or", ms=20)
+    return fig, ax
 
 
-def print_results(ordered_points, route):
+def print_results(ordered_points, route, total_distance):
     print("Order in which points were visited:")
     template = "{:<10}{:<10}{:<10}"
     print(template.format("Point #", "x coord", "y coord"))
     for ii, pt in zip(route, ordered_points):
         # note: add 1 to point index because user counts from 1
         print(template.format(ii+1, pt[0], pt[1]))
-    total_distance = calculate_route_distance(ordered_points)
     print(f"\nTotal length of route (km): {total_distance}")
 
 
@@ -103,10 +101,9 @@ def closest_neighbour_route(points, initial_point=None):
 #    points.set_index("index", inplace=True)
 #    points = np.array([points.x_coord, points.y_coord]).T
 #
-#    fig, ax = plot_points(points)
+#    fig, ax = plot_stuff(points, ordered_points)
 #
 #    route = closest_neighbour_route(points, initial_point=0)
 #    #route = random_route(points)
 #    ordered_points = get_points_from_route(points, route)
-#    plot_route(ordered_points)
 #    print_results(ordered_points, route)

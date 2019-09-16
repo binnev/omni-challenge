@@ -115,11 +115,11 @@ def main(argv):
         sys.exit()
 
     ordered_points = get_points_from_route(points, route)
+    total_distance = calculate_route_distance(ordered_points)
 
     # show results
-    fig, ax = plot_points(points)
-    plot_route(ordered_points)
-    print_results(ordered_points, route)
+    fig, ax = plot_stuff(points, ordered_points)
+    print_results(ordered_points, route, total_distance)
 
     # save the plot of the route
     if save_figure:
@@ -131,7 +131,7 @@ def main(argv):
         plt.tight_layout()
         fig.savefig(figure_filename)
 
-    return points, route
+    return points, route, total_distance
 
 if __name__ == "__main__":
     main(sys.argv[1:])
