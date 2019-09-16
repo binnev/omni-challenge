@@ -25,6 +25,7 @@ def get_points_from_route(points, route):
 
 def plot_points(points):
     fig, ax = plt.subplots(figsize=(8, 8))
+    plt.setp(ax, xlabel="x (km)", ylabel="y (km)")
     plt.plot(*points.T, "ok", ms=15, zorder=1)
     for ii, pt in enumerate(points):
         # note: add 1 to point index because user counts from 1
@@ -96,7 +97,7 @@ def closest_neighbour_route(points, initial_point=None):
 
 if __name__ == "__main__":
 
-    file = "test.csv"
+    file = "map_a.csv"
     # import points
     points = pd.read_csv(file)
     points.set_index("index", inplace=True)
@@ -104,7 +105,7 @@ if __name__ == "__main__":
 
     fig, ax = plot_points(points)
 
-    route = closest_neighbour_route(points)
+    route = closest_neighbour_route(points, initial_point=0)
     #route = random_route(points)
     ordered_points = get_points_from_route(points, route)
     plot_route(ordered_points)

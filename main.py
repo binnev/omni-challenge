@@ -128,7 +128,7 @@ def main(argv):
         else:
             if Path(figure_filename).suffix == "":
                 figure_filename = figure_filename + ".png"
-        
+        plt.tight_layout()
         fig.savefig(figure_filename)
 
     return points, route
