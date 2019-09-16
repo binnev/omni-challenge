@@ -1,6 +1,6 @@
 # Traveling salesman challenge
 
-This program reads in a `csv` file containing the x-y coordinates of several points, and chooses a route which visits each point exactly once. Depending on the user's inputs, the route can be randomly generated or picked based on the closest neighbouring points. 
+This program reads in a `csv` file containing the x,y coordinates of several points, and chooses a route which visits each point exactly once. Depending on the user's inputs, the route can be randomly generated or picked based on the closest neighbouring points. 
 
 ## How to run the program 
 
@@ -66,6 +66,8 @@ As a simple improvement, I have implemented an algorithm which picks the next cl
 
 <img src="images/sensible.png">
 
-This is much better than the random route. It is not optimal, however. The algorithm only considers one point at a time, and does not consider the context of the whole route. Consequently, points it chooses to skip early on can result in costly jumps when they are included later. See below; point 21 could have been included between points 6 and 28 at a much lower cost than the jump from point 12.  
+This is much better than the random route. It is not optimal, however. The algorithm has a very "local" view; it only considers one point at a time, and does not consider the context of the whole route. Consequently, points it chooses to skip early on because they are slightly out of the way can result in costly jumps when they are included later. See below; point 21 could have been included between points 6 and 28 at a much lower cost than the jump from point 12.  
+
 <img src="images/big_jump.png">
 
+Given more time, I would implement an optimisation with the route length as the cost function. 

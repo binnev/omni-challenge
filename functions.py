@@ -25,7 +25,7 @@ def get_points_from_route(points, route):
 
 def plot_stuff(points, ordered_points):
     # plot points
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(6, 6))
     plt.setp(ax, xlabel="x (km)", ylabel="y (km)")
     plt.plot(*points.T, "ok", ms=15, zorder=1)
     for ii, pt in enumerate(points):
