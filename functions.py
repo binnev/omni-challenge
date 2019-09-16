@@ -11,15 +11,6 @@ from math import sqrt
 import random
 
 
-def plot_points(points):
-    fig, ax = plt.subplots(figsize=(8, 8))
-    plt.plot(*points.T, "ok", ms=15, zorder=1)
-    for ii, pt in enumerate(points):
-        plt.text(*pt, str(ii), color="w", ha="center", va="center",
-                 fontweight="bold", zorder=2)
-    return fig, ax
-
-
 def distance(x1, y1, x2, y2):
     """Euclidian distance between two points"""
     dx = x2 - x1
@@ -27,16 +18,19 @@ def distance(x1, y1, x2, y2):
     return sqrt(dx**2 + dy**2)
 
 
-def random_route(points):
-    """Generate random route which visits each point exactly once"""
-    route = list(range(len(points)))
-    random.shuffle(route)
-    return route
-
-
 def get_points_from_route(points, route):
     """Return a copy of the array of points, ordered by the route taken"""
     return np.array([points[i] for i in route])
+
+
+def plot_points(points):
+    fig, ax = plt.subplots(figsize=(8, 8))
+    plt.plot(*points.T, "ok", ms=15, zorder=1)
+    for ii, pt in enumerate(points):
+        # note: add 1 to point index because user counts from 1
+        plt.text(*pt, str(ii+1), color="w", ha="center", va="center",
+                 fontweight="bold", zorder=2)
+    return fig, ax
 
 
 def plot_route(ordered_points):
@@ -52,7 +46,8 @@ def print_results(ordered_points, route):
     template = "{:<10}{:<10}{:<10}"
     print(template.format("Point #", "x coord", "y coord"))
     for ii, pt in zip(route, ordered_points):
-        print(template.format(ii, pt[0], pt[1]))
+        # note: add 1 to point index because user counts from 1
+        print(template.format(ii+1, pt[0], pt[1]))
     total_distance = calculate_route_distance(ordered_points)
     print(f"\nTotal length of route (km): {total_distance}")
 
@@ -65,17 +60,27 @@ def calculate_route_distance(ordered_points):
     return total
 
 
-def closest_neighbour_route(points, start_point=None):
+def random_route(points, initial_point=None):
+    """Generate random route which visits each point exactly once"""
+    route = list(range(len(points)))
+    random.shuffle(route)
+    if initial_point is not None:
+        route.remove(initial_point)
+        route = [initial_point] + route
+    return route
+
+
+def closest_neighbour_route(points, initial_point=None):
     """Basic heuristic that picks the next point to visit based on how close it
     is to the current point."""
 
     route = []
 
     # pick a random start point if none was passed
-    if start_point is None:
+    if initial_point is None:
         route.append(random.randint(0, len(points)-1))
     else:
-        route.append(start_point)
+        route.append(initial_point)
 
     # keep choosing points until we've visited them all once
     while len(route) < len(points):
@@ -91,7 +96,7 @@ def closest_neighbour_route(points, start_point=None):
 
 if __name__ == "__main__":
 
-    file = "map_c.csv"
+    file = "test.csv"
     # import points
     points = pd.read_csv(file)
     points.set_index("index", inplace=True)
