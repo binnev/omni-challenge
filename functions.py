@@ -92,18 +92,3 @@ def closest_neighbour_route(points, initial_point=None):
         route.append(closest[0])
 
     return route
-
-#if __name__ == "__main__":
-#
-#    file = "map_a.csv"
-#    # import points
-#    points = pd.read_csv(file)
-#    points.set_index("index", inplace=True)
-#    points = np.array([points.x_coord, points.y_coord]).T
-#
-#    fig, ax = plot_stuff(points, ordered_points)
-#
-#    route = closest_neighbour_route(points, initial_point=0)
-#    #route = random_route(points)
-#    ordered_points = get_points_from_route(points, route)
-#    print_results(ordered_points, route)

@@ -8,6 +8,7 @@ Created on Mon Sep 16 20:42:05 2019
 
 from main import *
 
+# test outputs on simple map
 points, route, total_distance = main("-f simple.csv -m closest_neighbour".split(" "))
 assert total_distance == 30, "on the simple.csv map the closest neighbour method should never cross a diagonal."
 # distance function

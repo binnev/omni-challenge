@@ -10,6 +10,7 @@ import getopt, sys
 from pathlib import Path
 from functions import *  # I know this is bad practice, but this library does only one thing...
 
+
 def check_flag_passed(short, long, flags_passed):
     return (short in flags_passed) or (long in flags_passed)
 
@@ -132,6 +133,7 @@ def main(argv):
         fig.savefig(figure_filename)
 
     return points, route, total_distance
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

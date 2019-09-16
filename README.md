@@ -46,8 +46,6 @@ The following command will run the program on `map_c.csv` using the `closest_nei
 python main.py -f map_c.csv -m closest_neighbour -i 20 -s output.png
 ```
 
-
-
 ## Dependencies
 
 The following built-in python libraries are used in this project: `getopt`, `sys`, `pathlib`, `math`, `random` 
