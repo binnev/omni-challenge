@@ -9,7 +9,11 @@ Created on Mon Sep 16 20:42:05 2019
 from main import *
 
 # test outputs on simple map
-points, route, total_distance = main("-f simple.csv -m closest_neighbour".split(" "))
+points, route, total_distance = main("-f simple.csv -m closest_neighbour -i 1".split(" "))
+points2, route2, total_distance2 = main("--file simple.csv --method closest_neighbour --initial-point 1".split(" "))
+assert points.all() == points2.all(), "long flags should work too"
+assert route == route2, "long flags should work too"
+assert total_distance == total_distance2, "long flags should work too"
 assert total_distance == 30, "on the simple.csv map the closest neighbour method should never cross a diagonal."
 # distance function
 assert distance(0, 0, 3, 4) == 5
