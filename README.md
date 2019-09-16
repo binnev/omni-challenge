@@ -66,6 +66,6 @@ As a simple improvement, I have implemented an algorithm which picks the next cl
 
 <img src="images/sensible.png">
 
-This is much better than the random route. It is not optimal, however. The algorithm only considers one point at a time, and does not consider the context of the whole route. Consequently, points it chooses to skip early on can result in costly jumps when they are included later. See below; point 21 could have been included between points 28 and 30 at a much lower cost than the jump from point 12.  
+This is much better than the random route. It is not optimal, however. The algorithm only considers one point at a time, and does not consider the context of the whole route. Consequently, points it chooses to skip early on can result in costly jumps when they are included later. See below; point 21 could have been included between points 6 and 28 at a much lower cost than the jump from point 12.  
 <img src="images/big_jump.png">
 
