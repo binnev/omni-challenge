@@ -35,10 +35,13 @@ def get_points_from_route(points, route):
     return np.array([points[i] for i in route])
 
 
-def plot_stuff(points, route):
+def plot_stuff(points, route, total_distance=None):
     # plot points
     fig, ax = plt.subplots(figsize=(6, 6))
     plt.setp(ax, xlabel="x (km)", ylabel="y (km)")
+    if total_distance is not None:
+        plt.title(f"Length of route = {total_distance} km")
+
     plt.plot(*points.T, "ok", ms=15, zorder=1)
     for ii, pt in enumerate(points):
         # note: add 1 to point index because user counts from 1

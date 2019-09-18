@@ -133,7 +133,7 @@ def main(argv):
 
     # save the plot of the route
     if save_figure:
-        fig, ax = plot_stuff(points, route)
+        fig, ax = plot_stuff(points, route, total_distance)
         if figure_filename.strip() == "":
             figure_filename = "route.png"
         else:
