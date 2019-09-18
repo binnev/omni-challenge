@@ -139,7 +139,6 @@ def relocate_point(points, route, point_number, next_to=None):
     # closest point by default
     if next_to is None:
         next_to, _ = closest_neighbour(point_number, points)
-#        print(f"I'm using the closest point to point {point_number}: point {next_to}")
 
     # create a copy of the route with the point removed
     route = route.copy()
@@ -157,9 +156,7 @@ def relocate_point(points, route, point_number, next_to=None):
         else:
             trial.insert(trial.index(next_to)+1, point_number)
 
-#        print(f"inserting point {point_number} {insert_position} point {next_to}:")
         dist = calculate_route_distance(points=points, route=trial)
-#        print(f"the distance of this new route is {dist}")
         if dist < best_distance:
             best_distance = dist
             best_route = trial
@@ -167,34 +164,29 @@ def relocate_point(points, route, point_number, next_to=None):
     return best_route
 
 
-
 def smarter_relocate_point(points, route, point_number, consider_N_nearby=5,
                            route_only=False):
+    """This function tries to relocate a point; moving it next to its closest
+    neighbours in the route order"""
 
+    # try relocating the point anywhere
     if route_only is False:
         closest_points = distances_to_neighbours(point_number,
                                                  points)[:consider_N_nearby]
+    # relocate only next to points that are already in the route
     else:
-#        print("you want me to relocate this point into the route ONLY")
-        distances = distances_to_neighbours(orphan, points)
+        distances = distances_to_neighbours(point_number, points)
         closest_points = list(filter(lambda x: x[0] in route,
                                      distances))[:consider_N_nearby]
-#        print(f"the closest points are {closest_points}")
-#        for p in closest_points:
-#            print(f"point {p} in route? {p[0] in route}")
 
-#    print(f"you want to move point {point_number}")
+    # for each of the N closest points, try relocating next to it and
+    # calculate the distance. Keep the shortest route and return it.
     best_route = route.copy()
     best_distance = calculate_route_distance(points=points, route=route)
     for point, _ in closest_points:
-#        print("")
-#        print(f"I am going to try moving point {point_number} next to point {point}")
         trial = relocate_point(points, route, point_number, next_to=point)
-#        print(trial)
         dist = calculate_route_distance(points=points, route=trial)
-#        print(f"This trial route has a length of {dist}")
         if dist < best_distance:
-#            print(f"That's better than the previous best! ({best_distance})")
             best_distance = dist
             best_route = trial
 
@@ -202,6 +194,7 @@ def smarter_relocate_point(points, route, point_number, consider_N_nearby=5,
 
 
 def combine_subroutes(subroutes):
+    """Find all the ways in which a list of subroutes can be combined"""
     # trivial case -- nothing to rearrange
     if len(subroutes) < 2:
         return subroutes
@@ -228,7 +221,8 @@ def combine_subroutes(subroutes):
 
 
 def cut_route(points, route, jumps):
-
+    """Split a route at each of the "from"/"to" entries given in the "jumps"
+    parameter. Return a list of subroutes"""
     routes = [route.copy()]
 
     for jump in jumps:
@@ -245,65 +239,55 @@ def cut_route(points, route, jumps):
     return routes
 
 
-def optimise_route(points, route, shuffle_orphans=True):
+def optimise_route(points, route, shuffle_orphans=True,
+                   number_of_cuts=5,
+                   small_subgroup_proportion=.1):
+    """Try to optimise the route by eliminating the largest jumps in the route.
+    Where a large jump occurs, the route is split into subroutes. The resulting
+    list of subroutes is filtered; the "large" subroutes are recombined in the
+    way that yields the shortest route.
+
+    Any subroutes that are deemed "small" are split into orphan points which
+    are individually relocated.
+
+    The user can specify the "small_subgroup_proportion" parameter as a
+    proportion of the total number of points on the map. E.g.
+    If small_subgroup_proportion=0.5, any subroutes with
+    length < total_number_of_points * small_subgroup_proportion
+    will be considered "small".
+    """
+
     route = route.copy()
     # get top 5 largest jumps
-    biggest_jumps = analyse_jumps(points, route)[-5:]
-#    print("I'm going to cut the route between")
-#    for jump in biggest_jumps:
-#        print(f"from {jump['from']} to {jump['to']}")
+    biggest_jumps = analyse_jumps(points, route)[-number_of_cuts:]
     # split the route at each jump
     subroutes = cut_route(points, route, biggest_jumps)
 
     # split up "small" subgroups into ophan points for later relocation
-    crit_length = len(points)*.1
+    crit_length = len(points)*small_subgroup_proportion
     orphans = list(filter(lambda x: len(x) < crit_length, subroutes))
-#    print(f"I'm moving these short subroutes to orphans: {orphans}")
     orphans = [item for sublist in orphans for item in sublist]
 
     # keep long subroutes and recombine them
     subroutes = list(filter(lambda x: len(x) >= crit_length, subroutes))
     trial_routes = combine_subroutes(subroutes)
-    distances = [calculate_route_distance(points=points, route=r) for r in trial_routes]
+    distances = [calculate_route_distance(points, r) for r in trial_routes]
     # pick the shortest route
     ind = np.argmin(distances)
     new_route = trial_routes[ind]
-#    print(f"I've recombined the remaining subroutes into a larger route with len {len(new_route)}")
 
     # relocate the orphan points
     if shuffle_orphans is True:
         random.shuffle(orphans)
     for orphan in orphans:
-#        print(f"relocating orphan {orphan}")
         distances = distances_to_neighbours(orphan, points)
         closest_point_in_route, _ = list(filter(lambda x: x[0] in new_route,
-                                     distances))[0]
+                                                distances))[0]
         new_route = relocate_point(points, new_route, orphan,
                                    next_to=closest_point_in_route)
-#        print(f"length of route is now {len(new_route)}")
 
     # smart relocate every point
     for pt in new_route.copy():
         new_route = smarter_relocate_point(points, new_route, pt)
 
     return new_route
-
-
-# %%
-if __name__ == "__main__":
-    pass
-
-    points = generate_random_map(100)
-    # old route
-#    route = random_route(points, initial_point=0)
-    route = closest_neighbour_route(points, initial_point=0)
-    total_distance = calculate_route_distance(points, route)
-    plot_stuff(points, route)
-    plt.title(f"old route ({total_distance} long)")
-    #%%
-    route = optimise_route(points, route, shuffle_orphans=True)
-    total_distance = calculate_route_distance(points, route)
-    plot_stuff(points, route)
-    plt.title(f"new route ({total_distance} long)")
-
-
