@@ -129,11 +129,11 @@ def main(argv):
     total_distance = calculate_route_distance(points, route)
 
     # show results
-    fig, ax = plot_stuff(points, route)
     print_results(points, route, total_distance)
 
     # save the plot of the route
     if save_figure:
+        fig, ax = plot_stuff(points, route)
         if figure_filename.strip() == "":
             figure_filename = "route.png"
         else:
