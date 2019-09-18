@@ -17,23 +17,11 @@ def import_csv(file):
     return np.array([points.x_coord, points.y_coord]).T
 
 
-distance_matrix = None  # Will be overwritten with lookup table later
-
 def distance(x1, y1, x2, y2):
     """Euclidian distance between two points"""
     dx = x2 - x1
     dy = y2 - y1
     return sqrt(dx**2 + dy**2)
-
-
-def distance2(p1, p2):
-    """p1 and p2 are point numbers used to look up the distance in the
-    distance_matrix"""
-    global distance_matrix
-    if distance_matrix is None:
-        distance_matrix = np.array([[distance(*p, *q) for p in points] for q in points])
-
-    return distance_matrix[p1][p2]
 
 
 def generate_random_map(N, width=100):

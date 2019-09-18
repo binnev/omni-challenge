@@ -35,6 +35,7 @@ def print_helptext():
             Available methods are:
             - "random"
             - "closest_neighbour"
+            - "optimise_route"
 
             Defaults to "random".
 
