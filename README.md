@@ -68,4 +68,6 @@ This is much better than the random route. It is not optimal, however. The algor
 
 <img src="images/big_jump.png">
 
+Because the algorithm calculates the distance from each point to every other point, it is essentially calculating an N by N distance matrix. The computational cost should scale with O(N^2), where N is the number of points. 
+
 Given more time, I would implement an optimisation with the route length as the cost function. 

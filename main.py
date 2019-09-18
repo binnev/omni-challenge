@@ -30,22 +30,22 @@ def print_helptext():
             Path to the CSV file you want to use.
             Required.
 
-        -m, --method = <method name> 
-            Name of the route-finding method you want to use. 
-            Available methods are: 
+        -m, --method = <method name>
+            Name of the route-finding method you want to use.
+            Available methods are:
             - "random"
             - "closest_neighbour"
 
-            Defaults to "random". 
+            Defaults to "random".
 
         -i, --initial-point = <integer>
-            Force the route generation to start from this point. 
+            Force the route generation to start from this point.
 
         -s, --save-figure = <filename.ext>
-            Save the plot of the route in current working 
+            Save the plot of the route in current working
             directory. If no filename is given, "route.png"
             will be used. If no extension is specified, png
-            will be used. 
+            will be used.
             """
     print(helptext)
 
@@ -64,10 +64,10 @@ def main(argv):
         print_helptext()        # print the help text
         sys.exit(2)             # and exit with an error
 
-    # if the user passed the help flag, show the help and exit 
+    # if the user passed the help flag, show the help and exit
     if check_flag_passed("-h", "--help", opts):
         print_helptext()
-        sys.exit()  # don't do any other actions if help flag is passed. 
+        sys.exit()  # don't do any other actions if help flag is passed.
 
     # enforce required flags
     required = [("-f", "--file", "input file flag"),]
@@ -106,21 +106,30 @@ def main(argv):
     points.set_index("index", inplace=True)
     points = np.array([points.x_coord, points.y_coord]).T
 
-    # choose route 
+    # choose route
     if method == "random":
         route = random_route(points, initial_point)
     elif method == "closest_neighbour":
         route = closest_neighbour_route(points, initial_point)
+    elif method == "optimise_route":
+        route = closest_neighbour_route(points, initial_point)
+        trials = [route]
+        for ii in range(3):  # do 5 iterations of optimisation
+            trial = optimise_route(points, trials[-1])
+            trials.append(trial)
+        # select the best one
+        distances = [calculate_route_distance(points=points, route=t) for t in trials]
+        ind = np.argmin(distances)
+        route = trials[ind]
     else:
         print(f"I don't recognise that method: {method}")
         sys.exit()
 
-    ordered_points = get_points_from_route(points, route)
-    total_distance = calculate_route_distance(ordered_points)
+    total_distance = calculate_route_distance(points, route)
 
     # show results
-    fig, ax = plot_stuff(points, ordered_points)
-    print_results(ordered_points, route, total_distance)
+    fig, ax = plot_stuff(points, route)
+    print_results(points, route, total_distance)
 
     # save the plot of the route
     if save_figure:
